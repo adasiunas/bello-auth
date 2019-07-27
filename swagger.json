@@ -1,0 +1,77 @@
+
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Bello app auth",
+    "description": "An API for bello app authentication"
+  },
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "tags": [
+    {
+      "name": "Status",
+      "description": "Status endpoints"
+    }
+  ],
+  "paths": {
+    "/status": {
+      "get": {
+        "description": "Used for checking service status and code hash",
+        "tags": [
+          "Status"
+        ],
+        "operationId": "serviceStatus",
+        "responses": {
+          "200": {
+            "description": "Status response",
+            "schema": {
+              "$ref": "#/definitions/StatusResponse"
+            }
+          },
+          "500": {
+            "description": "Service down",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "StatusResponse": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string",
+          "enum": [
+            "InternalServerError",
+            "Unauthorized",
+            "NotFound",
+            "BadRequest"
+          ]
+        }
+      }
+    }
+  }
+}
