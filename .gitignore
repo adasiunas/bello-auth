@@ -1,0 +1,12 @@
+# local files
+.build
+.DS_Store
+dist
+
+vendor
+
+# ide
+*.idea
+.vscode
+*.pdf
+*.env

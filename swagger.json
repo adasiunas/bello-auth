@@ -20,8 +20,19 @@
     {
       "name": "Status",
       "description": "Status endpoints"
+    },
+    {
+      "name": "User",
+      "description": "User related operation endpoints"
     }
   ],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "paths": {
     "/status": {
       "get": {
@@ -41,6 +52,69 @@
             "description": "Service down",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user": {
+      "post": {
+        "description": "User registration endpoint",
+        "tags": [
+          "User"
+        ],
+        "operationId": "registerUserV1",
+        "parameters": [
+          {
+            "name": "Register",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegistrationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User successfully registered",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request payload",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Service down",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/resource": {
+      "get": {
+        "description": "Test auth resource",
+        "operationId": "getResource",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "x-nullable": false
+                }
+              }
             }
           }
         }
@@ -68,8 +142,38 @@
             "InternalServerError",
             "Unauthorized",
             "NotFound",
+            "UserAlreadyExists",
             "BadRequest"
           ]
+        }
+      }
+    },
+    "TokenResponse": {
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "x-nullable": false
+        },
+        "refreshToken": {
+          "type": "string",
+          "x-nullable": false
+        }
+      }
+    },
+    "RegistrationRequest": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-nullable": false
+        },
+        "password": {
+          "type": "string",
+          "x-nullable": false
         }
       }
     }

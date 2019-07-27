@@ -4,13 +4,17 @@ package restapi
 
 import (
 	"crypto/tls"
+	"fmt"
 	"github.com/adasiunas/bello-auth/apimodel"
+	"github.com/adasiunas/bello-auth/business"
+	middlew "github.com/adasiunas/bello-auth/restapi/middleware"
+	"github.com/adasiunas/bello-auth/restapi/operations/user"
+	v1 "github.com/adasiunas/bello-auth/restapi/v1"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/runtime/middleware"
 	"net/http"
 	"os"
-
-	errors "github.com/go-openapi/errors"
-	runtime "github.com/go-openapi/runtime"
-	middleware "github.com/go-openapi/runtime/middleware"
 
 	"github.com/adasiunas/bello-auth/restapi/operations"
 	"github.com/adasiunas/bello-auth/restapi/operations/status"
@@ -26,6 +30,8 @@ func configureAPI(api *operations.BelloAppAuthAPI) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
 
+	f := business.NewFactory()
+
 	// Set your custom logger if needed. Default one is log.Printf
 	// Expected interface func(string, ...interface{})
 	//
@@ -36,9 +42,18 @@ func configureAPI(api *operations.BelloAppAuthAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
+	api.BearerAuth = middlew.BearerAuthentication
+
 	api.StatusServiceStatusHandler = status.ServiceStatusHandlerFunc(func(params status.ServiceStatusParams) middleware.Responder {
 		hash := os.Getenv("GIT_HASH")
 		return status.NewServiceStatusOK().WithPayload(&apimodel.StatusResponse{hash})
+	})
+
+	api.UserRegisterUserV1Handler = user.RegisterUserV1HandlerFunc(v1.RegisterUser(f))
+
+	api.GetResourceHandler = operations.GetResourceHandlerFunc(func(params operations.GetResourceParams, principal interface{}) middleware.Responder {
+		fmt.Println(principal)
+		return operations.NewGetResourceOK().WithPayload(&operations.GetResourceOKBody{Text:"Works like a charm"})
 	})
 
 	api.ServerShutdown = func() {}

@@ -20,6 +20,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/adasiunas/bello-auth/restapi/operations/status"
+	"github.com/adasiunas/bello-auth/restapi/operations/user"
 )
 
 // NewBelloAppAuthAPI creates a new BelloAppAuth instance
@@ -39,9 +40,23 @@ func NewBelloAppAuthAPI(spec *loads.Document) *BelloAppAuthAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
+		GetResourceHandler: GetResourceHandlerFunc(func(params GetResourceParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation GetResource has not yet been implemented")
+		}),
+		UserRegisterUserV1Handler: user.RegisterUserV1HandlerFunc(func(params user.RegisterUserV1Params) middleware.Responder {
+			return middleware.NotImplemented("operation UserRegisterUserV1 has not yet been implemented")
+		}),
 		StatusServiceStatusHandler: status.ServiceStatusHandlerFunc(func(params status.ServiceStatusParams) middleware.Responder {
 			return middleware.NotImplemented("operation StatusServiceStatus has not yet been implemented")
 		}),
+
+		// Applies when the "Authorization" header is set
+		BearerAuth: func(token string) (interface{}, error) {
+			return nil, errors.NotImplemented("api key auth (Bearer) Authorization from header param [Authorization] has not yet been implemented")
+		},
+
+		// default authorizer is authorized meaning no requests are blocked
+		APIAuthorizer: security.Authorized(),
 	}
 }
 
@@ -73,6 +88,17 @@ type BelloAppAuthAPI struct {
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
+	// BearerAuth registers a function that takes a token and returns a principal
+	// it performs authentication based on an api key Authorization provided in the header
+	BearerAuth func(string) (interface{}, error)
+
+	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
+	APIAuthorizer runtime.Authorizer
+
+	// GetResourceHandler sets the operation handler for the get resource operation
+	GetResourceHandler GetResourceHandler
+	// UserRegisterUserV1Handler sets the operation handler for the register user v1 operation
+	UserRegisterUserV1Handler user.RegisterUserV1Handler
 	// StatusServiceStatusHandler sets the operation handler for the service status operation
 	StatusServiceStatusHandler status.ServiceStatusHandler
 
@@ -138,6 +164,18 @@ func (o *BelloAppAuthAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.BearerAuth == nil {
+		unregistered = append(unregistered, "AuthorizationAuth")
+	}
+
+	if o.GetResourceHandler == nil {
+		unregistered = append(unregistered, "GetResourceHandler")
+	}
+
+	if o.UserRegisterUserV1Handler == nil {
+		unregistered = append(unregistered, "user.RegisterUserV1Handler")
+	}
+
 	if o.StatusServiceStatusHandler == nil {
 		unregistered = append(unregistered, "status.ServiceStatusHandler")
 	}
@@ -157,14 +195,24 @@ func (o *BelloAppAuthAPI) ServeErrorFor(operationID string) func(http.ResponseWr
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *BelloAppAuthAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 
-	return nil
+	result := make(map[string]runtime.Authenticator)
+	for name, scheme := range schemes {
+		switch name {
+
+		case "Bearer":
+
+			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, o.BearerAuth)
+
+		}
+	}
+	return result
 
 }
 
 // Authorizer returns the registered authorizer
 func (o *BelloAppAuthAPI) Authorizer() runtime.Authorizer {
 
-	return nil
+	return o.APIAuthorizer
 
 }
 
@@ -239,6 +287,16 @@ func (o *BelloAppAuthAPI) initHandlerCache() {
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v1/resource"] = NewGetResource(o.context, o.GetResourceHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v1/user"] = user.NewRegisterUserV1(o.context, o.UserRegisterUserV1Handler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

@@ -57,6 +57,68 @@ func init() {
           }
         }
       }
+    },
+    "/v1/resource": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Test auth resource",
+        "operationId": "getResource",
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "x-nullable": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user": {
+      "post": {
+        "description": "User registration endpoint",
+        "tags": [
+          "User"
+        ],
+        "operationId": "registerUserV1",
+        "parameters": [
+          {
+            "name": "Register",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegistrationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User successfully registered",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request payload",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Service down",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -69,11 +131,29 @@ func init() {
             "InternalServerError",
             "Unauthorized",
             "NotFound",
+            "UserAlreadyExists",
             "BadRequest"
           ]
         },
         "type": {
           "type": "string"
+        }
+      }
+    },
+    "RegistrationRequest": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-nullable": false
+        },
+        "password": {
+          "type": "string",
+          "x-nullable": false
         }
       }
     },
@@ -84,12 +164,35 @@ func init() {
           "type": "string"
         }
       }
+    },
+    "TokenResponse": {
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "x-nullable": false
+        },
+        "refreshToken": {
+          "type": "string",
+          "x-nullable": false
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
     }
   },
   "tags": [
     {
       "description": "Status endpoints",
       "name": "Status"
+    },
+    {
+      "description": "User related operation endpoints",
+      "name": "User"
     }
   ]
 }`))
@@ -133,6 +236,68 @@ func init() {
           }
         }
       }
+    },
+    "/v1/resource": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Test auth resource",
+        "operationId": "getResource",
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "x-nullable": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user": {
+      "post": {
+        "description": "User registration endpoint",
+        "tags": [
+          "User"
+        ],
+        "operationId": "registerUserV1",
+        "parameters": [
+          {
+            "name": "Register",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegistrationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User successfully registered",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request payload",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Service down",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -145,11 +310,29 @@ func init() {
             "InternalServerError",
             "Unauthorized",
             "NotFound",
+            "UserAlreadyExists",
             "BadRequest"
           ]
         },
         "type": {
           "type": "string"
+        }
+      }
+    },
+    "RegistrationRequest": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-nullable": false
+        },
+        "password": {
+          "type": "string",
+          "x-nullable": false
         }
       }
     },
@@ -160,12 +343,35 @@ func init() {
           "type": "string"
         }
       }
+    },
+    "TokenResponse": {
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "x-nullable": false
+        },
+        "refreshToken": {
+          "type": "string",
+          "x-nullable": false
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
     }
   },
   "tags": [
     {
       "description": "Status endpoints",
       "name": "Status"
+    },
+    {
+      "description": "User related operation endpoints",
+      "name": "User"
     }
   ]
 }`))
