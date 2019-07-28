@@ -20,7 +20,7 @@ func GetDBConnection() string {
 	case "mssql":
 		return fmt.Sprintf("sqlserver://%s:%s@%s:%s?database=%s", user, pass, host, port, name)
 	case "mysql":
-		return fmt.Sprintf("%s://%s:%s@%s:%s/%s", dialect, user, pass, host, port, name)
+		return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, pass, host, port, name)
 	}
 
 	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", dialect, user, pass, host, port, name)

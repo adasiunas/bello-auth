@@ -119,6 +119,44 @@ func init() {
           }
         }
       }
+    },
+    "/v1/user/login": {
+      "post": {
+        "description": "Login user",
+        "tags": [
+          "User"
+        ],
+        "operationId": "loginUser",
+        "parameters": [
+          {
+            "name": "Login",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User successfully registered",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request payload",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Service down",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -132,11 +170,29 @@ func init() {
             "Unauthorized",
             "NotFound",
             "UserAlreadyExists",
+            "IncorrectCredentials",
             "BadRequest"
           ]
         },
         "type": {
           "type": "string"
+        }
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-nullable": false
+        },
+        "password": {
+          "type": "string",
+          "x-nullable": false
         }
       }
     },
@@ -298,6 +354,44 @@ func init() {
           }
         }
       }
+    },
+    "/v1/user/login": {
+      "post": {
+        "description": "Login user",
+        "tags": [
+          "User"
+        ],
+        "operationId": "loginUser",
+        "parameters": [
+          {
+            "name": "Login",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User successfully registered",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request payload",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Service down",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -311,11 +405,29 @@ func init() {
             "Unauthorized",
             "NotFound",
             "UserAlreadyExists",
+            "IncorrectCredentials",
             "BadRequest"
           ]
         },
         "type": {
           "type": "string"
+        }
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-nullable": false
+        },
+        "password": {
+          "type": "string",
+          "x-nullable": false
         }
       }
     },

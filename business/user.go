@@ -26,3 +26,18 @@ func RegisterUser(d *gorm.DB, email, pass string) (token model.Token, err error)
 
 	return token, belloerr.ErrUserAlreadyExist
 }
+
+func LoginUser(d *gorm.DB, email, pass string) (token model.Token, err error) {
+	user, err := db.GetUserByEmail(d, email)
+	if err != nil {
+		return token, err
+	}
+
+	if user.Password != pass {
+		return token, belloerr.ErrUserNotFound
+	}
+
+	now := time.Now().UTC()
+	token.AccessToken, err = IssueToken(user.ID, now.Add(ACCESS_TOKEN_EXPIRE_TIME))
+	return token, err
+}

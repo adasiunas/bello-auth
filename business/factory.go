@@ -1,6 +1,7 @@
 package business
 
 import (
+	"github.com/adasiunas/bello-auth/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"
@@ -11,8 +12,7 @@ type Factory struct {
 }
 
 func NewFactory() *Factory {
-	//dialect := os.Getenv("DB_DIALECT")
-	sess, err := gorm.Open("mysql", "root:nesakysiu@/bello_auth?parseTime=true")
+	sess, err := gorm.Open("mysql", config.GetDBConnection())
 	if err != nil {
 		panic(err)
 	}

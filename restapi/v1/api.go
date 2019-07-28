@@ -23,3 +23,19 @@ func RegisterUser(f *business.Factory) func(params user.RegisterUserV1Params) mi
 		return user.NewRegisterUserV1OK().WithPayload(&apimodel.TokenResponse{AccessToken: token.AccessToken, RefreshToken: token.RefreshToken})
 	}
 }
+
+// /v1/user/login [POST]
+func LoginUser(f *business.Factory) func(params user.LoginUserParams) middleware.Responder {
+	return func(params user.LoginUserParams) middleware.Responder {
+		token, err := business.LoginUser(f.DB(), params.Login.Email, params.Login.Password)
+		if err != nil {
+			if err == belloerr.ErrUserNotFound {
+				return user.NewLoginUserBadRequest().WithPayload(&apimodel.ErrorResponse{Message:"Incorrect credentials", Type:apimodel.ErrorResponseMessageIncorrectCredentials})
+			}
+
+			return user.NewLoginUserInternalServerError().WithPayload(&apimodel.ErrorResponse{Message: err.Error(), Type: apimodel.ErrorResponseMessageInternalServerError})
+		}
+
+		return user.NewRegisterUserV1OK().WithPayload(&apimodel.TokenResponse{AccessToken: token.AccessToken, RefreshToken: token.RefreshToken})
+	}
+}

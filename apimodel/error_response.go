@@ -20,7 +20,7 @@ import (
 type ErrorResponse struct {
 
 	// message
-	// Enum: [InternalServerError Unauthorized NotFound UserAlreadyExists BadRequest]
+	// Enum: [InternalServerError Unauthorized NotFound UserAlreadyExists IncorrectCredentials BadRequest]
 	Message string `json:"message,omitempty"`
 
 	// type
@@ -45,7 +45,7 @@ var errorResponseTypeMessagePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["InternalServerError","Unauthorized","NotFound","UserAlreadyExists","BadRequest"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["InternalServerError","Unauthorized","NotFound","UserAlreadyExists","IncorrectCredentials","BadRequest"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -66,6 +66,9 @@ const (
 
 	// ErrorResponseMessageUserAlreadyExists captures enum value "UserAlreadyExists"
 	ErrorResponseMessageUserAlreadyExists string = "UserAlreadyExists"
+
+	// ErrorResponseMessageIncorrectCredentials captures enum value "IncorrectCredentials"
+	ErrorResponseMessageIncorrectCredentials string = "IncorrectCredentials"
 
 	// ErrorResponseMessageBadRequest captures enum value "BadRequest"
 	ErrorResponseMessageBadRequest string = "BadRequest"

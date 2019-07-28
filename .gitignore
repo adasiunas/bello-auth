@@ -2,7 +2,7 @@
 .build
 .DS_Store
 dist
-
+.idea
 vendor
 
 # ide
@@ -10,3 +10,4 @@ vendor
 .vscode
 *.pdf
 *.env
+*.xml

@@ -7,6 +7,7 @@ import (
 	apierrors "github.com/go-openapi/errors"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func BearerAuthentication(token string) (interface{}, error) {
@@ -21,6 +22,10 @@ func BearerAuthentication(token string) (interface{}, error) {
 	tkn, err := jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
 		return business.JWTSecret(), nil
 	})
+
+	if !claims.VerifyExpiresAt(time.Now().Unix(), true) {
+		return nil, apierrors.New(http.StatusUnauthorized, "access token is expired")
+	}
 
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {

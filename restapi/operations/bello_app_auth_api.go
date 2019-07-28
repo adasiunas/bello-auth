@@ -43,6 +43,9 @@ func NewBelloAppAuthAPI(spec *loads.Document) *BelloAppAuthAPI {
 		GetResourceHandler: GetResourceHandlerFunc(func(params GetResourceParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation GetResource has not yet been implemented")
 		}),
+		UserLoginUserHandler: user.LoginUserHandlerFunc(func(params user.LoginUserParams) middleware.Responder {
+			return middleware.NotImplemented("operation UserLoginUser has not yet been implemented")
+		}),
 		UserRegisterUserV1Handler: user.RegisterUserV1HandlerFunc(func(params user.RegisterUserV1Params) middleware.Responder {
 			return middleware.NotImplemented("operation UserRegisterUserV1 has not yet been implemented")
 		}),
@@ -97,6 +100,8 @@ type BelloAppAuthAPI struct {
 
 	// GetResourceHandler sets the operation handler for the get resource operation
 	GetResourceHandler GetResourceHandler
+	// UserLoginUserHandler sets the operation handler for the login user operation
+	UserLoginUserHandler user.LoginUserHandler
 	// UserRegisterUserV1Handler sets the operation handler for the register user v1 operation
 	UserRegisterUserV1Handler user.RegisterUserV1Handler
 	// StatusServiceStatusHandler sets the operation handler for the service status operation
@@ -170,6 +175,10 @@ func (o *BelloAppAuthAPI) Validate() error {
 
 	if o.GetResourceHandler == nil {
 		unregistered = append(unregistered, "GetResourceHandler")
+	}
+
+	if o.UserLoginUserHandler == nil {
+		unregistered = append(unregistered, "user.LoginUserHandler")
 	}
 
 	if o.UserRegisterUserV1Handler == nil {
@@ -292,6 +301,11 @@ func (o *BelloAppAuthAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v1/resource"] = NewGetResource(o.context, o.GetResourceHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v1/user/login"] = user.NewLoginUser(o.context, o.UserLoginUserHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
