@@ -5,6 +5,7 @@ import (
 	belloerr "github.com/adasiunas/bello-auth/error"
 	"github.com/adasiunas/bello-auth/model"
 	"github.com/jinzhu/gorm"
+	"github.com/satori/go.uuid"
 	"time"
 )
 
@@ -14,14 +15,12 @@ func RegisterUser(d *gorm.DB, email, pass string) (token model.Token, err error)
 	}
 
 	if err == belloerr.ErrUserNotFound {
-		now := time.Now().UTC()
 		user, err := db.CreateUser(d, email, pass)
 		if err != nil {
 			return token, err
 		}
 
-		token.AccessToken, err = IssueToken(user.ID, now.Add(ACCESS_TOKEN_EXPIRE_TIME))
-		return token, err
+		return RefreshTokens(d, user.ID)
 	}
 
 	return token, belloerr.ErrUserAlreadyExist
@@ -37,7 +36,24 @@ func LoginUser(d *gorm.DB, email, pass string) (token model.Token, err error) {
 		return token, belloerr.ErrUserNotFound
 	}
 
-	now := time.Now().UTC()
-	token.AccessToken, err = IssueToken(user.ID, now.Add(ACCESS_TOKEN_EXPIRE_TIME))
+	return RefreshTokens(d, user.ID)
+}
+
+func RefreshTokens(d *gorm.DB, userID uuid.UUID) (token model.Token, err error) {
+	user, err := db.GetUserByID(d, userID)
+	if err != nil {
+		return
+	}
+
+	token.AccessToken, err = IssueToken(user.ID, ACCESS_TOKEN, time.Now().Add(ACCESS_TOKEN_EXPIRE_TIME))
+	if err != nil {
+		return token, err
+	}
+
+	token.RefreshToken, err = IssueToken(user.ID, REFRESH_TOKEN, time.Now().Add(REFRESH_TOKEN_EXPIRE_TIME))
+	if err != nil {
+		return token, err
+	}
+
 	return token, err
 }

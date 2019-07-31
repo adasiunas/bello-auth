@@ -53,6 +53,8 @@ func configureAPI(api *operations.BelloAppAuthAPI) http.Handler {
 
 	api.UserLoginUserHandler = user.LoginUserHandlerFunc(v1.LoginUser(f))
 
+	api.UserRefreshAccessTokenHandler = user.RefreshAccessTokenHandlerFunc(v1.RefreshUserToken(f))
+
 	api.GetResourceHandler = operations.GetResourceHandlerFunc(func(params operations.GetResourceParams, principal interface{}) middleware.Responder {
 		fmt.Println(principal)
 		return operations.NewGetResourceOK().WithPayload(&operations.GetResourceOKBody{Text:"Works like a charm"})

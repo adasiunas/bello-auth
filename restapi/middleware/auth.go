@@ -27,6 +27,11 @@ func BearerAuthentication(token string) (interface{}, error) {
 		return nil, apierrors.New(http.StatusUnauthorized, "access token is expired")
 	}
 
+	tokenType := claims["tp"]
+	if tokenType != string(business.ACCESS_TOKEN) {
+		return nil, apierrors.New(http.StatusUnauthorized, apimodel.ErrorResponseMessageUnauthorized)
+	}
+
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
 			return nil, apierrors.New(http.StatusUnauthorized, apimodel.ErrorResponseMessageUnauthorized)

@@ -157,6 +157,44 @@ func init() {
           }
         }
       }
+    },
+    "/v1/user/refresh": {
+      "post": {
+        "description": "Refresh access token",
+        "tags": [
+          "User"
+        ],
+        "operationId": "refreshAccessToken",
+        "parameters": [
+          {
+            "name": "Token",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RefreshRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User's token was successfully refreshed",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request payload",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Service down",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -191,6 +229,18 @@ func init() {
           "x-nullable": false
         },
         "password": {
+          "type": "string",
+          "x-nullable": false
+        }
+      }
+    },
+    "RefreshRequest": {
+      "type": "object",
+      "required": [
+        "refreshToken"
+      ],
+      "properties": {
+        "refreshToken": {
           "type": "string",
           "x-nullable": false
         }
@@ -392,6 +442,44 @@ func init() {
           }
         }
       }
+    },
+    "/v1/user/refresh": {
+      "post": {
+        "description": "Refresh access token",
+        "tags": [
+          "User"
+        ],
+        "operationId": "refreshAccessToken",
+        "parameters": [
+          {
+            "name": "Token",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RefreshRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User's token was successfully refreshed",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request payload",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Service down",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -426,6 +514,18 @@ func init() {
           "x-nullable": false
         },
         "password": {
+          "type": "string",
+          "x-nullable": false
+        }
+      }
+    },
+    "RefreshRequest": {
+      "type": "object",
+      "required": [
+        "refreshToken"
+      ],
+      "properties": {
+        "refreshToken": {
           "type": "string",
           "x-nullable": false
         }

@@ -46,6 +46,9 @@ func NewBelloAppAuthAPI(spec *loads.Document) *BelloAppAuthAPI {
 		UserLoginUserHandler: user.LoginUserHandlerFunc(func(params user.LoginUserParams) middleware.Responder {
 			return middleware.NotImplemented("operation UserLoginUser has not yet been implemented")
 		}),
+		UserRefreshAccessTokenHandler: user.RefreshAccessTokenHandlerFunc(func(params user.RefreshAccessTokenParams) middleware.Responder {
+			return middleware.NotImplemented("operation UserRefreshAccessToken has not yet been implemented")
+		}),
 		UserRegisterUserV1Handler: user.RegisterUserV1HandlerFunc(func(params user.RegisterUserV1Params) middleware.Responder {
 			return middleware.NotImplemented("operation UserRegisterUserV1 has not yet been implemented")
 		}),
@@ -102,6 +105,8 @@ type BelloAppAuthAPI struct {
 	GetResourceHandler GetResourceHandler
 	// UserLoginUserHandler sets the operation handler for the login user operation
 	UserLoginUserHandler user.LoginUserHandler
+	// UserRefreshAccessTokenHandler sets the operation handler for the refresh access token operation
+	UserRefreshAccessTokenHandler user.RefreshAccessTokenHandler
 	// UserRegisterUserV1Handler sets the operation handler for the register user v1 operation
 	UserRegisterUserV1Handler user.RegisterUserV1Handler
 	// StatusServiceStatusHandler sets the operation handler for the service status operation
@@ -179,6 +184,10 @@ func (o *BelloAppAuthAPI) Validate() error {
 
 	if o.UserLoginUserHandler == nil {
 		unregistered = append(unregistered, "user.LoginUserHandler")
+	}
+
+	if o.UserRefreshAccessTokenHandler == nil {
+		unregistered = append(unregistered, "user.RefreshAccessTokenHandler")
 	}
 
 	if o.UserRegisterUserV1Handler == nil {
@@ -306,6 +315,11 @@ func (o *BelloAppAuthAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/v1/user/login"] = user.NewLoginUser(o.context, o.UserLoginUserHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v1/user/refresh"] = user.NewRefreshAccessToken(o.context, o.UserRefreshAccessTokenHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

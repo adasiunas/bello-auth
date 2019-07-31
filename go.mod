@@ -11,9 +11,9 @@ require (
 	github.com/go-openapi/strfmt v0.19.2
 	github.com/go-openapi/swag v0.19.4
 	github.com/go-openapi/validate v0.19.2
-	github.com/google/uuid v1.1.1
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jinzhu/gorm v1.9.10
+	github.com/pkg/errors v0.8.0
 	github.com/satori/go.uuid v1.2.0
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80
 )
