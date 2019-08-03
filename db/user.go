@@ -19,7 +19,7 @@ func CreateUser(db *gorm.DB, email string, pass string) (user model.User, err er
 	}
 
 	err = db.Create(&user).Error
-	return
+	return user, err
 }
 
 func GetUserByEmail(db *gorm.DB, email string) (user model.User, err error) {
@@ -28,7 +28,7 @@ func GetUserByEmail(db *gorm.DB, email string) (user model.User, err error) {
 		return user, belloerr.ErrUserNotFound
 	}
 
-	return
+	return user, err
 }
 
 func GetUserByID(db *gorm.DB, ID uuid.UUID) (user model.User, err error) {
@@ -37,5 +37,5 @@ func GetUserByID(db *gorm.DB, ID uuid.UUID) (user model.User, err error) {
 		return user, belloerr.ErrUserNotFound
 	}
 
-	return
+	return user, err
 }

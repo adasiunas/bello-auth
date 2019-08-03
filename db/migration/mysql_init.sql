@@ -1,3 +1,5 @@
+USE bello_auth;
+
 CREATE TABLE user (
     id BINARY(36) PRIMARY KEY,
     email NVARCHAR(50) NOT NULL,
