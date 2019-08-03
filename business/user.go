@@ -4,8 +4,10 @@ import (
 	"github.com/adasiunas/bello-auth/db"
 	belloerr "github.com/adasiunas/bello-auth/error"
 	"github.com/adasiunas/bello-auth/model"
+	"github.com/adasiunas/bello-auth/util"
 	"github.com/jinzhu/gorm"
 	"github.com/satori/go.uuid"
+	"strings"
 	"time"
 )
 
@@ -15,7 +17,8 @@ func RegisterUser(d *gorm.DB, email, pass string) (token model.Token, err error)
 	}
 
 	if err == belloerr.ErrUserNotFound {
-		user, err := db.CreateUser(d, email, pass)
+		passwordToken := GeneratePasswordToken(pass)
+		user, err := db.CreateUser(d, email, passwordToken)
 		if err != nil {
 			return token, err
 		}
@@ -32,8 +35,12 @@ func LoginUser(d *gorm.DB, email, pass string) (token model.Token, err error) {
 		return token, err
 	}
 
-	if user.Password != pass {
-		return token, belloerr.ErrUserNotFound
+	hashAndSalt := strings.Split(user.PasswordToken, ".")
+	hashStr, saltStr := hashAndSalt[0], hashAndSalt[1]
+	pwHash := util.GetHash(pass, util.FromStringToSalt(saltStr))
+
+	if pwHash.String() != hashStr {
+		return token, belloerr.ErrInvalidCredentials
 	}
 
 	return RefreshTokens(d, user.ID)

@@ -8,14 +8,14 @@ import (
 	"time"
 )
 
-func CreateUser(db *gorm.DB, email string, pass string) (user model.User, err error) {
+func CreateUser(db *gorm.DB, email string, passwordToken string) (user model.User, err error) {
 	now := time.Now().UTC()
 	user = model.User{
-		ID: uuid.NewV1(),
-		Email: email,
-		Password: pass,
-		CreatedAt: now,
-		UpdatedAt: now,
+		ID:            uuid.NewV1(),
+		Email:         email,
+		PasswordToken: passwordToken,
+		CreatedAt:     now,
+		UpdatedAt:     now,
 	}
 
 	err = db.Create(&user).Error

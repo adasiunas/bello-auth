@@ -1,6 +1,7 @@
 package business
 
 import (
+	"github.com/adasiunas/bello-auth/util"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
 	"github.com/satori/go.uuid"
@@ -68,4 +69,11 @@ func ValidateRefreshToken(token string) (map[string]interface{}, error) {
 	}
 
 	return claims, nil
+}
+
+func GeneratePasswordToken(pass string) string {
+	salt := util.GenerateSalt()
+	pwHash := util.GetHash(pass, salt)
+
+	return pwHash.String() + "." + salt.String()
 }

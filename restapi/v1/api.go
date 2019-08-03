@@ -30,7 +30,7 @@ func LoginUser(f *business.Factory) func(params user.LoginUserParams) middleware
 	return func(params user.LoginUserParams) middleware.Responder {
 		token, err := business.LoginUser(f.DB(), params.Login.Email, params.Login.Password)
 		if err != nil {
-			if err == belloerr.ErrUserNotFound {
+			if err == belloerr.ErrUserNotFound || err == belloerr.ErrInvalidCredentials {
 				return user.NewLoginUserBadRequest().WithPayload(&apimodel.ErrorResponse{Message:"Incorrect credentials", Type:apimodel.ErrorResponseMessageIncorrectCredentials})
 			}
 

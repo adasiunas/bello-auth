@@ -15,5 +15,6 @@ require (
 	github.com/jinzhu/gorm v1.9.10
 	github.com/pkg/errors v0.8.0
 	github.com/satori/go.uuid v1.2.0
+	golang.org/x/crypto v0.0.0-20190617133340-57b3e21c3d56
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80
 )
