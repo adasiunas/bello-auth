@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bello-mysql
+  labels:
+    app: bello-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bello-mysql
+  template:
+    metadata:
+      labels:
+        app: bello-mysql
+    spec:
+      containers:
+      - name: bello-mysql
+        image: mysql:5.7
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bello-mysql-pass
+              key: password
+        ports:
+        - name: bello-mysql
+          containerPort: 3306
+          protocol: TCP
+        volumeMounts:
+        - name: k8s-mysql-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: k8s-mysql-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bello-mysql-service
+spec:
+  selector:
+    app: bello-mysql
+  ports:
+    - port: 3306

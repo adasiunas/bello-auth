@@ -9,5 +9,4 @@ vendor
 *.idea
 .vscode
 *.pdf
-*.env
 *.xml
